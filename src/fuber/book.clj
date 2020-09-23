@@ -10,6 +10,8 @@
     {:license "432abc" :booked? false :pink? true :location [(rand 100) (rand 100)]}
     {:license "126abc" :booked? false :pink? false :location [(rand 100) (rand 100)]}]))
 
+(def total-amount (atom 0))
+
 (defn distance-between-locations
   "Function to calculate distance between customer and current cab locations.
    Distance calculated is assumed to be in km"
@@ -45,3 +47,25 @@
         nearest-free-cab (first (sort-by #(distance-between-locations cus-loc (% :location))
                                          free-cabs))]
     nearest-free-cab))
+
+;; Assumming covering 1 km takes 15 mins (Its Bangalore :p)
+(defn amount-owed
+  "Returns the total amount owed for the trip"
+  [source destination pink]
+  (let [total-distance (distance-between-locations source destination)
+        total-amount   (+ (* 2 total-distance) (* total-distance 15 1))]
+    (if pink
+      (+ total-amount 5)
+      total-amount)))
+
+(defn book-cab
+  "Books the cabs and calculates the amount owed by customer for the trip"
+  [source destination pink]
+  (let [nearest-cab (nearest-available-cab source pink)
+        _ (reset! cabs-info (map (fn [{:keys [license] :as item}]
+                                    (if (= license (nearest-cab :license))
+                                      (assoc item :booked? true) item))
+                                @cabs-info))
+        cost        (amount-owed source destination pink)
+        _ (reset! total-amount (+ @total-amount cost))]
+    "Cab booked"))
