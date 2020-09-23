@@ -73,6 +73,9 @@
    showing total amount owed for the trip"
   [cab-license destination]
   (let [booked-cab-info (first (filter #(= cab-license (% :license)) @cabs-info))
+        _ (when (false? (booked-cab-info :booked?))
+            (throw (ex-info "Trying to end the trip of free cab"
+                            {:type :unavailable :cause :unavailable :status 403})))
         cost (amount-owed (booked-cab-info :location) destination (booked-cab-info :pink?))
         _ (reset! cabs-info (map (fn [{:keys [license] :as item}]
                                    (if (= license cab-license)
