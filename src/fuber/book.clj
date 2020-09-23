@@ -67,3 +67,16 @@
                                      (assoc item :booked? true :location source) item))
                                  @cabs-info))]
     (str "Cab with license number " (nearest-cab :license) " booked")))
+
+(defn end-trip
+  "Ends the trip at the destination given and returns the message
+   showing total amount owed for the trip"
+  [cab-license destination]
+  (let [booked-cab-info (first (filter #(= cab-license (% :license)) @cabs-info))
+        cost (amount-owed (booked-cab-info :location) destination (booked-cab-info :pink?))
+        _ (reset! cabs-info (map (fn [{:keys [license] :as item}]
+                                   (if (= license cab-license)
+                                     (assoc item :booked? false :location destination) item))
+                                 @cabs-info))
+        _ (reset! total-amount (+ @total-amount cost))]
+    (str "Trip Ended. Total amount owed = " cost)))
