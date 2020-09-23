@@ -17,3 +17,17 @@
   (let [distance (math/sqrt (+ (math/expt (- (first cus-loc) (first cab-loc)) 2)
                                (math/expt (- (second cus-loc) (second cab-loc)) 2)))]
     distance))
+
+(defn available-cabs
+  "Returns all the available (free) cabs"
+  []
+  (filter #(false? (% :booked?)) @cabs-info))
+
+(defn nearest-available-cab
+  "Given the customer location find the nearest available
+   cab for the customer"
+  [cus-loc]
+  (let [free-cabs (available-cabs)
+        nearest-free-cab (first (sort-by #(distance-between-locations cus-loc (% :location))
+                                         free-cabs))]
+    nearest-free-cab))
