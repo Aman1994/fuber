@@ -59,13 +59,11 @@
       total-amount)))
 
 (defn book-cab
-  "Books the cabs and calculates the amount owed by customer for the trip"
-  [source destination pink]
+  "Book the cab and returns the message showing license num of the booked cab"
+  [source pink]
   (let [nearest-cab (nearest-available-cab source pink)
         _ (reset! cabs-info (map (fn [{:keys [license] :as item}]
-                                    (if (= license (nearest-cab :license))
-                                      (assoc item :booked? true) item))
-                                @cabs-info))
-        cost        (amount-owed source destination pink)
-        _ (reset! total-amount (+ @total-amount cost))]
-    "Cab booked"))
+                                   (if (= license (nearest-cab :license))
+                                     (assoc item :booked? true :location source) item))
+                                 @cabs-info))]
+    (str "Cab with license number " (nearest-cab :license) " booked")))
