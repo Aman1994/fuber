@@ -10,6 +10,7 @@
     {:license "432abc" :booked? false :pink? true :location [(rand 100) (rand 100)]}
     {:license "126abc" :booked? false :pink? false :location [(rand 100) (rand 100)]}]))
 
+;; total amount earned by fuber till date
 (def total-amount (atom 0))
 
 (defn distance-between-locations
@@ -26,16 +27,16 @@
   (let [cabs (filter #(false? (% :booked?)) @cabs-info)]
     (if (empty? cabs)
       (throw (ex-info "No cabs available"
-                      {:type :unavailabe :cause :unavailabe :status 403})))
+                      {:type :unavailable :cause :unavailable :status 403})))
     cabs))
 
 (defn available-pink-cabs
-  "Retuns only tha available (free) pink cabs"
+  "Returns only the available (free) pink cabs"
   []
   (let [cabs (filter #(true? (% :pink?)) (available-cabs))]
     (if (empty? cabs)
       (throw (ex-info "No pink cabs available"
-                      {:type :unavailabe :cause :unavailabe :status 403})))
+                      {:type :unavailable :cause :unavailable :status 403})))
     cabs))
 
 (defn nearest-available-cab
@@ -59,7 +60,7 @@
       total-amount)))
 
 (defn book-cab
-  "Book the cab and returns the message showing license num of the booked cab"
+  "Books the cab and returns the message showing license num of the booked cab"
   [source pink]
   (let [nearest-cab (nearest-available-cab source pink)
         _ (reset! cabs-info (map (fn [{:keys [license] :as item}]
