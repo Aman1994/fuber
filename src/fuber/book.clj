@@ -21,12 +21,20 @@
 (defn available-cabs
   "Returns all the available (free) cabs"
   []
-  (filter #(false? (% :booked?)) @cabs-info))
+  (let [cabs (filter #(false? (% :booked?)) @cabs-info)]
+    (if (empty? cabs)
+      (throw (ex-info "No cabs available"
+                      {:type :unavailabe :cause :unavailabe :status 403})))
+    cabs))
 
 (defn available-pink-cabs
   "Retuns only tha available (free) pink cabs"
   []
-  (filter #(true? (% :pink?)) (available-cabs)))
+  (let [cabs (filter #(true? (% :pink?)) (available-cabs))]
+    (if (empty? cabs)
+      (throw (ex-info "No pink cabs available"
+                      {:type :unavailabe :cause :unavailabe :status 403})))
+    cabs))
 
 (defn nearest-available-cab
   "Given the customer location find the nearest available
