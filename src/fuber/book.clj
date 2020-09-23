@@ -23,11 +23,17 @@
   []
   (filter #(false? (% :booked?)) @cabs-info))
 
+(defn available-pink-cabs
+  "Retuns only tha available (free) pink cabs"
+  []
+  (filter #(true? (% :pink?)) (available-cabs)))
+
 (defn nearest-available-cab
   "Given the customer location find the nearest available
    cab for the customer"
-  [cus-loc]
-  (let [free-cabs (available-cabs)
+  [cus-loc pink]
+  (let [free-cabs (if pink (available-pink-cabs)
+                    (available-cabs))
         nearest-free-cab (first (sort-by #(distance-between-locations cus-loc (% :location))
                                          free-cabs))]
     nearest-free-cab))
