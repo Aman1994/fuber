@@ -1,4 +1,5 @@
 (ns fuber.core
+  (:require [fuber.book :refer :all])
   (:gen-class))
 
 (defn -main
