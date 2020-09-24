@@ -7,7 +7,8 @@
                  [org.clojure/math.numeric-tower "0.0.4"]
                  [compojure "1.6.1"]
                  [http-kit "2.3.0"]
-                 [ring/ring-defaults "0.3.2"]]
+                 [ring/ring-defaults "0.3.2"]
+                 [clj-http "3.10.3"]]
   :plugins       [[lein-ring "0.12.5"]]
   :main ^:skip-aot fuber.core
   :target-path "target/%s"
