@@ -10,19 +10,19 @@ Download from https://github.com/Aman1994/fuber.
 ## Uberjar
 
 ```
-lein uberjar
+lein ring uberjar
 ```
 
 ## Running the application
 
 ```
-lein run
+lein ring server-headless
 
 OR
 
 java -jar target/uberjar/fuber-0.1.0-standalone.jar
 ```
-The above accepts the port number. If unspecified it will run at default port 3000
+The above will run the application at port 3000
 
 ## Testing
 
