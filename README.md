@@ -1,6 +1,7 @@
 # fuber
 
-Backend APIs for on call cab service
+Backend APIs for on call cab service.
+API functionalities includes booking a cab, ending your trip, getting information about total amount earned until now and also information about which all cabs are free. While booking a cab you can also decide if you want to book a special pink cab or not. When pink cab is booked you are charged an extra 5.
 
 ## Installation
 
@@ -16,6 +17,10 @@ lein uberjar
 
 ```
 lein run
+
+OR
+
+java -jar target/uberjar/fuber-0.1.0-standalone.jar
 ```
 The above accepts the port number. If unspecified it will run at default port 3000
 
@@ -32,9 +37,11 @@ lein test
 ```
 Endpoint - /book-trip
 
-Accepts  - It accepts params as query string. The params it accepts are `source` and `pink`. Source means your current location and `pink` means whether you want to book a pink cab or not. `source` must be a vector of latitute and longitude while pink must be a boolean.
+Params   - It accepts params as query string. The params it accepts are - source and pink.
+           source means your current location and pink means whether you want to book a pink cab or not.
+           source must be a vector of latitute and longitude while pink must be a boolean.
 
-Usage    - curl -i 'http://localhost:3000/book-trip?source=\[1,2\]&pink1=true'
+Usage    - curl -i 'http://localhost:3000/book-trip?source=\[1,2\]&pink=true'
 ```
 
 2. For ending trips -
@@ -42,7 +49,9 @@ Usage    - curl -i 'http://localhost:3000/book-trip?source=\[1,2\]&pink1=true'
 ```
 Endpoint - /end-trip
 
-Accepts  - It accepts params as query string. The params it accepts are `license-num` and `destination`. `license-num` means the license number of the cab and `destination` means location you want to end the trip on. `license-num` must be string while `destination` must be a vector of latitute and longitude .
+Params   - It accepts params as query string.The params it accepts are - license-num and destination.
+           license-num means the license number of the cab and destination means location you want to end the trip on.
+           license-num must be string while destination must be a vector of latitute and longitude.
 
 Usage    - curl -i 'http://localhost:3000/end-trip?license-num=432abc&destination=\[1,2\]'
 ```
@@ -52,13 +61,17 @@ Usage    - curl -i 'http://localhost:3000/end-trip?license-num=432abc&destinatio
 ```
 Endpoint - /total-amount
 
-Usage    - curl -i 'http://127.0.0.1:3000/total-amount'
+Params   - It accepts no params
+
+Usage    - curl -i 'http://localhost:3000/total-amount'
 ```
 
 4. Total available (free) cabs -
 
 ```
 Endpoint - /available-cabs
+
+Params   - It accepts no params
 
 Usage    - curl -i 'http://localhost:3000/available-cabs'
 ```
