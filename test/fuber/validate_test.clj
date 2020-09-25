@@ -9,7 +9,7 @@
     (is (s/valid? ::va/end-required {:license-num "123abc" :destination [1 2]}))
     (is (not (s/valid? ::va/end-required {:license-num "123abc" :destination [1 "2"]})))
     (is (not (s/valid? ::va/book-required {:source "123abc" :pink true})))
-    (is (s/valid? ::va/license-num "abc123"))
+    (is (s/valid? ::va/license-num "123abc"))
     (is (s/valid? ::va/pink true))
     (is (not (s/valid? ::va/pink "true")))
     (is (s/valid? ::va/source [1 2]))
