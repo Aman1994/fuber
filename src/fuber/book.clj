@@ -1,6 +1,5 @@
 (ns fuber.book
-  (:require [clojure.math.numeric-tower :as math]
-            [fuber.validate :refer :all]))
+  (:require [clojure.math.numeric-tower :as math]))
 
 ;; Sample cabs-info where in :location first variable is latitute while second varibale is longitude
 (def cabs-info
@@ -28,7 +27,7 @@
   (let [cabs (filter #(false? (% :booked?)) @cabs-info)]
     (if (empty? cabs)
       (throw (ex-info "No cabs available"
-                      {:type :unavailable :cause :unavailable :status 403})))
+                      {:cause "No cabs available"})))
     cabs))
 
 (defn available-pink-cabs
@@ -37,7 +36,7 @@
   (let [cabs (filter #(true? (% :pink?)) (available-cabs))]
     (if (empty? cabs)
       (throw (ex-info "No pink cabs available"
-                      {:type :unavailable :cause :unavailable :status 403})))
+                      {:cause "no pink cab available"})))
     cabs))
 
 (defn nearest-available-cab
@@ -62,30 +61,26 @@
 
 (defn book-cab
   "Books the cab and returns the message showing license num of the booked cab"
-  [source pink]
-  (if (valid-book-trip-params? source pink)
-    (let [nearest-cab (nearest-available-cab source pink)
-          _ (reset! cabs-info (map (fn [{:keys [license] :as item}]
-                                     (if (= license (nearest-cab :license))
-                                       (assoc item :booked? true :location source) item))
-                                   @cabs-info))]
-      (str "Cab with license number " (nearest-cab :license) " booked"))
-    {:status 400 :body "Invalid Input"}))
+  [{:keys [source pink]}]
+  (let [nearest-cab (nearest-available-cab source pink)
+        _ (reset! cabs-info (map (fn [{:keys [license] :as item}]
+                                   (if (= license (nearest-cab :license))
+                                     (assoc item :booked? true :location source) item))
+                                 @cabs-info))]
+    (str "Cab with license number " (nearest-cab :license) " booked")))
 
 (defn end-trip
   "Ends the trip at the destination given and returns the message
    showing total amount owed for the trip"
-  [cab-license destination]
-  (if (valid-end-trip-params? cab-license destination)
-    (let [booked-cab-info (first (filter #(= cab-license (% :license)) @cabs-info))
-          _ (when (false? (booked-cab-info :booked?))
-              (throw (ex-info "Trying to end the trip of free cab"
-                              {:causes "cab already free"})))
-          cost (amount-owed (booked-cab-info :location) destination (booked-cab-info :pink?))
-          _ (reset! cabs-info (map (fn [{:keys [license] :as item}]
-                                     (if (= license cab-license)
-                                       (assoc item :booked? false :location destination) item))
-                                   @cabs-info))
-          _ (reset! total-amount (+ @total-amount cost))]
-      (str "Trip Ended. Total amount owed = " cost))
-    {:status 400 :body "Invalid Input"}))
+  [{:keys [license-num destination]}]
+  (let [booked-cab-info (first (filter #(= license-num (% :license)) @cabs-info))
+        _ (when (false? (booked-cab-info :booked?))
+            (throw (ex-info "Trying to end the trip of free cab"
+                            {:causes "cab already free"})))
+        cost (amount-owed (booked-cab-info :location) destination (booked-cab-info :pink?))
+        _ (reset! cabs-info (map (fn [{:keys [license] :as item}]
+                                   (if (= license license-num)
+                                     (assoc item :booked? false :location destination) item))
+                                 @cabs-info))
+        _ (reset! total-amount (+ @total-amount cost))]
+      (str "Trip Ended. Total amount owed = " cost)))
