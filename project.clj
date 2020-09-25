@@ -6,10 +6,10 @@
   :dependencies [[org.clojure/clojure "1.10.0"]
                  [org.clojure/math.numeric-tower "0.0.4"]
                  [compojure "1.6.1"]
-                 [http-kit "2.3.0"]
-                 [ring/ring-defaults "0.3.2"]
-                 [clj-http "3.10.3"]]
+                 [ring/ring-json "0.4.0"]
+                 [ring/ring-mock "0.3.2"]]
   :plugins       [[lein-ring "0.12.5"]]
   :main ^:skip-aot fuber.core
   :target-path "target/%s"
-  :profiles {:uberjar {:aot :all}})
+  :profiles {:uberjar {:aot :all}}
+  :ring {:handler fuber.core/handler})
