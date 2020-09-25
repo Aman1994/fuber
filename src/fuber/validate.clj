@@ -22,3 +22,29 @@
 (s/def ::book-required (s/keys :req-un [::source ::pink]))
 
 (s/def ::end-required (s/keys :req-un [::license-num ::destination]))
+
+(defn with-http-error-response
+  "Throws an error and catches it"
+  [response]
+  (try
+    (throw (Exception. ""))
+    (catch Exception e response)))
+
+(defn check-validity
+  "Checks if params are valid if yes executes the required function
+   else catch the exception"
+  [api-func spec params]
+  (if (s/valid? spec params)
+    (api-func params)
+    (with-http-error-response
+        {:status 400
+         :body (s/explain-str spec params)})))
+
+(defn validate-data
+  "Validates values passed in the request params"
+  [request api-func]
+  (let [params (into {} (map (fn [[k v]]
+                               (assoc {} k (if (= k :license-num) v (read-string v)))) (request :params)))]
+    (case (request :uri)
+      "/book-trip" (check-validity api-func ::book-required params)
+      "/end-trip" (check-validity api-func ::end-required params))))
