@@ -1,10 +1,11 @@
 (ns fuber.core
   (:require [fuber.book :refer :all]
-            [org.httpkit.server :as server]
             [compojure.core :refer :all]
             [compojure.route :as route]
             [fuber.validate :refer :all]
-            [ring.middleware.defaults :refer :all])
+            [ring.middleware.params :refer [wrap-params]]
+            [ring.middleware.keyword-params :refer [wrap-keyword-params]]
+            [ring.middleware.json :refer [wrap-json-response]])
   (:gen-class))
 
 (defroutes app-routes
@@ -17,9 +18,8 @@
   (GET "/available-cabs" [] (available-cabs))
   (route/not-found "<h1>Page not found</h1>"))
 
-(defn -main
-  "This is our main entry point"
-  [& args]
-  (let [port (Integer/parseInt (or (first args) "3000"))]
-    (server/run-server (wrap-defaults #'app-routes site-defaults) {:port port})
-    (println (str "Running webserver at http:/127.0.0.1:" port "/"))))
+(def handler
+  (-> app-routes
+      wrap-json-response
+      wrap-keyword-params
+      wrap-params))
