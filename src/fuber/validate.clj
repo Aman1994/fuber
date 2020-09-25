@@ -1,22 +1,24 @@
 (ns fuber.validate
-  (:require [clojure.spec.alpha :as s]))
+  (:require [clojure.spec.alpha :as s]
+            [fuber.book :refer :all]))
 
-(s/def ::location
+(defn license-exists?
+  "Retuns true if license exists else false"
+  [license-num]
+  (not (empty? (filter #(= license-num (% :license)) @cabs-info))))
+
+(s/def ::source
   (s/coll-of number? :kind vector? :count 2))
 
-(s/def ::license string?)
-  ;(s/and string? #(license-exists? %)))
+(s/def ::destination
+  (s/coll-of number? :kind vector? :count 2))
+
+;;Retuns true if string and license exists in our data
+(s/def ::license-num (and string?
+                          #(license-exists? %)))
 
 (s/def ::pink boolean?)
 
-(defn valid-end-trip-params?
-  "Validates if the params provided to end-trip function is valid or not"
-  [lic-num dest]
-  (and (s/valid? ::license lic-num)
-       (s/valid? ::location dest)))
+(s/def ::book-required (s/keys :req-un [::source ::pink]))
 
-(defn valid-book-trip-params?
-  "Validates if the params provided to book-cab function is valid or not"
-  [source pink]
-  (and (s/valid? ::location source)
-       (s/valid? ::pink pink)))
+(s/def ::end-required (s/keys :req-un [::license-num ::destination]))
