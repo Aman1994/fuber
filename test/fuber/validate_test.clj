@@ -1,12 +1,16 @@
 (ns fuber.validate-test
   (:require [clojure.test :refer :all]
-            [fuber.validate :refer :all]))
+            [clojure.spec.alpha :as s]
+            [fuber.validate :as va]))
 
 (deftest input-params
   (testing "Spec functions"
-    (is (true? (valid-end-trip-params? "123abc" [1 2])))
-    (is (false? (valid-end-trip-params? 1 true)))
-    (is (false? (valid-end-trip-params? "123abc" [1 "2"])))
-    (is (true? (valid-book-trip-params? [1 2] true)))
-    (is (false? (valid-book-trip-params? ["1" 2] true)))
-    (is (false? (valid-book-trip-params? [1 2] "true")))))
+    (is (s/valid? ::va/book-required {:source [1 2] :pink true}))
+    (is (s/valid? ::va/end-required {:license-num "123abc" :destination [1 2]}))
+    (is (not (s/valid? ::va/end-required {:license-num "123abc" :destination [1 "2"]})))
+    (is (not (s/valid? ::va/book-required {:source "123abc" :pink true})))
+    (is (s/valid? ::va/license-num "abc123"))
+    (is (s/valid? ::va/pink true))
+    (is (not (s/valid? ::va/pink "true")))
+    (is (s/valid? ::va/source [1 2]))
+    (is (not (s/valid? ::va/source ["1" 2])))))
